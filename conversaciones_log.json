@@ -1,0 +1,63 @@
+[
+  {
+    "timestamp": "2026-06-11T19:30:42.479307",
+    "cliente_id": "C001",
+    "mensaje_usuario": "Hola, soy Carlos. Tengo $2.000.000 para invertir, ¿cuánto rinde el FCI de renta fija?",
+    "faq_match": "El FCI de renta fija tiene un rendimiento promedio de 9.2% mensual y rescate en 24-48hs.",
+    "faq_score": 0.665,
+    "tools_llamadas": [
+      {
+        "funcion": "buscar_producto",
+        "argumentos": {
+          "nombre_producto": "FCI de renta fija"
+        }
+      }
+    ],
+    "derivado": false,
+    "respuesta_asistente": "Hola Carlos, gracias por considerar a Helix para tu inversión. El FCI de renta fija que ofrecemos tiene un rendimiento promedio del 9.2% mensual. Además, cuenta con un plazo de rescate de 24 a 48 horas, lo que te brinda flexibilidad en caso de que necesites acceder a tus fondos.\n\nSi estás interesado en obtener más información o deseas invertir los $2.000.000 en este producto, estaré encantado de guiarte a través del proceso. ¿Te gustaría saber más sobre cómo funciona la inversión en nuestro FCI de renta fija o tienes alguna otra pregunta?"
+  },
+  {
+    "timestamp": "2026-06-11T19:30:43.624099",
+    "cliente_id": "C001",
+    "mensaje_usuario": "Buenísimo. Por otro lado, ¿cuál es mi saldo actual?",
+    "faq_match": "El FCI de renta fija tiene un rendimiento promedio de 9.2% mensual y rescate en 24-48hs.",
+    "faq_score": 0.628,
+    "tools_llamadas": [
+      {
+        "funcion": "consultar_saldo",
+        "argumentos": {
+          "cliente_id": "C001"
+        }
+      }
+    ],
+    "derivado": false,
+    "respuesta_asistente": "Hola Carlos, según nuestros registros, tu saldo actual es de $1.500.000 en pesos argentinos y $8.000 en dólares estadounidenses. ¿Necesitas ayuda con algo más o deseas realizar alguna operación con estos fondos?"
+  },
+  {
+    "timestamp": "2026-06-11T19:30:44.416421",
+    "cliente_id": "C001",
+    "mensaje_usuario": "¿Y si en cambio necesito algo con liquidez inmediata, por si tengo que usar la plata de un día para el otro?",
+    "faq_match": "El FCI Money Market permite rescate inmediato el mismo día hábil, ideal para liquidez.",
+    "faq_score": 0.734,
+    "tools_llamadas": [
+      {
+        "funcion": "buscar_producto",
+        "argumentos": {
+          "nombre_producto": "FCI Money Market"
+        }
+      }
+    ],
+    "derivado": false,
+    "respuesta_asistente": "Si necesitas liquidez inmediata, te recomiendo considerar nuestro FCI Money Market. Este producto ofrece la ventaja de poder rescatar tus fondos de manera inmediata el mismo día hábil, lo que te brinda la flexibilidad necesaria para acceder a tu dinero cuando lo necesites.\n\nEl FCI Money Market es ideal para aquellos que buscan mantener su liquidez sin sacrificar la oportunidad de generar rendimientos. ¿Te gustaría saber más sobre cómo funciona este producto o deseas invertir una parte de tus $2.000.000 en el FCI Money Market?"
+  },
+  {
+    "timestamp": "2026-06-11T19:30:45.463709",
+    "cliente_id": "C002",
+    "mensaje_usuario": "Quiero hacer un reclamo formal: me cobraron una comisión indebida hace 6 meses y todavía no me la devolvieron.",
+    "faq_match": null,
+    "faq_score": 0.531,
+    "tools_llamadas": [],
+    "derivado": true,
+    "respuesta_asistente": "Lo siento, pero no puedo ayudarte con reclamos formales. Te recomiendo que te comuniques con tu asesor de cuenta para que pueda ayudarte a resolver este tema. Estoy aquí para ayudarte con información general sobre nuestros productos y servicios, pero para temas como reclamos formales, es mejor que hables directamente con alguien que pueda ayudarte de manera más personalizada. ¿Quieres que te proporcione la información de contacto de tu asesor de cuenta?"
+  }
+]
