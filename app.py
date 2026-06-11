@@ -36,10 +36,9 @@ TEXTOS = {
         "chat_placeholder": "💬 Escribí tu consulta financiera...",
         "spinner": "🧠 Procesando tu consulta...",
         "about_header": "👤 Sobre este proyecto",
-        "about_body": "Proyecto de portfolio creado por **Javier Echalecu**, como parte de su "
-                       "formación en IA Aplicada y Automatización.",
-        "link_portfolio": "🗂️ Ver mi portfolio completo",
-        "link_linkedin": "💼 Conectar en LinkedIn",
+        "about_body": "Proyecto de portfolio creado por **Javier Echalecu**.",
+        "link_portfolio": "Portfolio",
+        "link_linkedin": "LinkedIn",
         "lang_instruction": "Respondé siempre en español, sin importar el idioma en el que escriba el usuario.",
     },
     "en": {
@@ -57,10 +56,9 @@ TEXTOS = {
         "chat_placeholder": "💬 Type your financial question...",
         "spinner": "🧠 Processing your request...",
         "about_header": "👤 About this project",
-        "about_body": "Portfolio project created by **Javier Echalecu**, as part of his "
-                       "training in Applied AI and Automation.",
-        "link_portfolio": "🗂️ View my full portfolio",
-        "link_linkedin": "💼 Connect on LinkedIn",
+        "about_body": "Portfolio project created by **Javier Echalecu**.",
+        "link_portfolio": "Portfolio",
+        "link_linkedin": "LinkedIn",
         "lang_instruction": "Always respond in English, regardless of the language the user writes in.",
     },
     "pt": {
@@ -78,10 +76,9 @@ TEXTOS = {
         "chat_placeholder": "💬 Digite sua consulta financeira...",
         "spinner": "🧠 Processando sua consulta...",
         "about_header": "👤 Sobre este projeto",
-        "about_body": "Projeto de portfólio criado por **Javier Echalecu**, como parte de sua "
-                       "formação em IA Aplicada e Automação.",
-        "link_portfolio": "🗂️ Ver meu portfólio completo",
-        "link_linkedin": "💼 Conectar no LinkedIn",
+        "about_body": "Projeto de portfólio criado por **Javier Echalecu**.",
+        "link_portfolio": "Portfólio",
+        "link_linkedin": "LinkedIn",
         "lang_instruction": "Responda sempre em português, independentemente do idioma usado pelo usuário.",
     },
 }
