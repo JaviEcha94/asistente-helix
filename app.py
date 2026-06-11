@@ -9,7 +9,7 @@ from sentence_transformers import SentenceTransformer
 # CONFIGURACIÓN DE LA PÁGINA
 # ================================================================
 st.set_page_config(
-    page_title="AsesorAI Helix",
+    page_title="Helix IA",
     page_icon="🏦",
     layout="centered"
 )
@@ -355,7 +355,7 @@ def asistente_helix(mensaje_usuario, historial, cliente_id="C001", log_sesion=No
 # ================================================================
 # INTERFAZ DE CHAT (Streamlit)
 # ================================================================
-st.title("🏦 AsesorAI Helix")
+st.title("🏦 Helix IA")
 st.caption("Asistente financiero — proyecto de portfolio | Helix es una fintech digital ficticia")
 st.divider()
 
@@ -393,11 +393,6 @@ if prompt := st.chat_input("💬 Escribí tu consulta financiera..."):
 # SIDEBAR
 # ================================================================
 with st.sidebar:
-    st.header("Sobre AsesorAI Helix")
-    st.write("🏦 Proyecto de portfolio — Javier Echalecu")
-    st.write("🤖 Modelo: Llama 3.3 70B (vía Groq, gratis)")
-    st.write("🔍 Búsqueda semántica: sentence-transformers (local)")
-    st.divider()
     st.write("**Cliente de prueba:** C001 (Carlos)")
     st.write("**Probá preguntar:**")
     st.write("• ¿Cuánto rinde el FCI de renta fija?")
