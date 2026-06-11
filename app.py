@@ -15,6 +15,79 @@ st.set_page_config(
 )
 
 # ================================================================
+# TEXTOS MULTI-IDIOMA Y LINKS DE CONTACTO
+# ================================================================
+PORTFOLIO_URL = "https://app.notion.com/p/Portfolio-Javier-Echalecu-37a3e7f37f9881e881b6fa18d5005ef5?source=copy_link"
+LINKEDIN_URL = "https://linkedin.com/in/javier-nicolas-echalecu/"
+
+TEXTOS = {
+    "es": {
+        "flag": "🇦🇷 Español",
+        "caption": "Asistente financiero — proyecto de portfolio | Helix es una fintech digital ficticia",
+        "preguntas_label": "**Probá preguntar:**",
+        "preguntas": [
+            "¿Cuánto rinde el FCI de renta fija?",
+            "¿Cuál es mi saldo?",
+            "Quiero invertir en CEDEARs, ¿qué me recomendás?",
+            "Necesito liquidez inmediata, ¿qué me conviene?",
+        ],
+        "cliente_label": "**Cliente de prueba:** C001",
+        "reset_btn": "🗑️ Reiniciar conversación",
+        "chat_placeholder": "💬 Escribí tu consulta financiera...",
+        "spinner": "🧠 Procesando tu consulta...",
+        "about_header": "👤 Sobre este proyecto",
+        "about_body": "Proyecto de portfolio creado por **Javier Echalecu**, como parte de su "
+                       "formación en IA Aplicada y Automatización.",
+        "link_portfolio": "🗂️ Ver mi portfolio completo",
+        "link_linkedin": "💼 Conectar en LinkedIn",
+        "lang_instruction": "Respondé siempre en español, sin importar el idioma en el que escriba el usuario.",
+    },
+    "en": {
+        "flag": "🇺🇸 English",
+        "caption": "Financial assistant — portfolio project | Helix is a fictional digital fintech",
+        "preguntas_label": "**Try asking:**",
+        "preguntas": [
+            "How much does the fixed-income fund yield?",
+            "What's my balance?",
+            "I want to invest in CEDEARs, what do you recommend?",
+            "I need immediate liquidity, what's best for me?",
+        ],
+        "cliente_label": "**Test client:** C001",
+        "reset_btn": "🗑️ Reset conversation",
+        "chat_placeholder": "💬 Type your financial question...",
+        "spinner": "🧠 Processing your request...",
+        "about_header": "👤 About this project",
+        "about_body": "Portfolio project created by **Javier Echalecu**, as part of his "
+                       "training in Applied AI and Automation.",
+        "link_portfolio": "🗂️ View my full portfolio",
+        "link_linkedin": "💼 Connect on LinkedIn",
+        "lang_instruction": "Always respond in English, regardless of the language the user writes in.",
+    },
+    "pt": {
+        "flag": "🇧🇷 Português",
+        "caption": "Assistente financeiro — projeto de portfólio | Helix é uma fintech digital fictícia",
+        "preguntas_label": "**Experimente perguntar:**",
+        "preguntas": [
+            "Quanto rende o fundo de renda fixa?",
+            "Qual é o meu saldo?",
+            "Quero investir em CEDEARs, o que você recomenda?",
+            "Preciso de liquidez imediata, o que é melhor para mim?",
+        ],
+        "cliente_label": "**Cliente de teste:** C001",
+        "reset_btn": "🗑️ Reiniciar conversa",
+        "chat_placeholder": "💬 Digite sua consulta financeira...",
+        "spinner": "🧠 Processando sua consulta...",
+        "about_header": "👤 Sobre este projeto",
+        "about_body": "Projeto de portfólio criado por **Javier Echalecu**, como parte de sua "
+                       "formação em IA Aplicada e Automação.",
+        "link_portfolio": "🗂️ Ver meu portfólio completo",
+        "link_linkedin": "💼 Conectar no LinkedIn",
+        "lang_instruction": "Responda sempre em português, independentemente do idioma usado pelo usuário.",
+    },
+}
+
+
+# ================================================================
 # SETUP — recursos pesados se cachean (cargan una sola vez)
 # ================================================================
 @st.cache_resource
@@ -118,6 +191,33 @@ faq_database = [
             "qué son las obligaciones negociables",
             "conviene invertir en on de empresas argentinas",
             "qué diferencia hay entre un bono del estado y uno de una empresa"
+        ]
+    },
+    {
+        "respuesta": "Para abrir una cuenta Helix Estándar solo necesitás ser mayor de 18 años, tener DNI argentino vigente y completar el registro desde la app con una selfie de verificación. La aprobación es 100% online y demora menos de 10 minutos, sin costo de apertura ni requisitos de ingresos mínimos.",
+        "variantes": [
+            "qué necesito para abrir una cuenta en Helix",
+            "cómo me registro en Helix",
+            "cuánto tarda en aprobarse una cuenta nueva",
+            "puedo abrir una cuenta sin ser cliente Black"
+        ]
+    },
+    {
+        "respuesta": "Si perdés tu tarjeta o sospechás un movimiento no reconocido, podés bloquearla al instante desde la app (sección Tarjetas → Bloquear) sin costo, las 24 horas. Helix nunca te va a pedir tu clave, PIN o código de verificación por teléfono, email o WhatsApp — cualquier mensaje que lo pida es un intento de fraude.",
+        "variantes": [
+            "qué hago si pierdo mi tarjeta",
+            "me robaron la tarjeta cómo la bloqueo",
+            "veo un movimiento que no reconozco qué hago",
+            "me llamaron pidiendo mi clave es real"
+        ]
+    },
+    {
+        "respuesta": "La cuenta Helix Estándar no tiene costo de mantenimiento ni de apertura. Las transferencias entre cuentas Helix son gratuitas; las transferencias a otros bancos no tienen costo hasta un tope mensual, y luego aplica una comisión fija que se muestra antes de confirmar la operación.",
+        "variantes": [
+            "la cuenta tiene costo de mantenimiento",
+            "cuánto cuesta tener una cuenta en Helix",
+            "cobran algo por transferir a otros bancos",
+            "qué comisiones tiene la cuenta básica"
         ]
     }
 ]
@@ -271,7 +371,7 @@ tools = [
 # ================================================================
 # ASISTENTE HELIX — orquestador (FAQ + historial + function calling + log)
 # ================================================================
-def asistente_helix(mensaje_usuario, historial, cliente_id="C001", log_sesion=None):
+def asistente_helix(mensaje_usuario, historial, cliente_id="C001", log_sesion=None, idioma_instruccion=""):
     registro = {
         "timestamp": datetime.now().isoformat(),
         "cliente_id": cliente_id,
@@ -301,7 +401,8 @@ def asistente_helix(mensaje_usuario, historial, cliente_id="C001", log_sesion=No
             Sos profesional, conciso y orientado a soluciones.
             Si la consulta está fuera de tu alcance (temas legales, fiscales, reclamos formales,
             o no tenés información suficiente), decilo y ofrecé derivar al asesor de cuenta.
-            Nunca inventes tasas, números o condiciones de productos."""
+            Nunca inventes tasas, números o condiciones de productos.
+            {idioma_instruccion}"""
         })
 
     historial.append({"role": "user", "content": mensaje_usuario + contexto_faq})
@@ -353,16 +454,42 @@ def asistente_helix(mensaje_usuario, historial, cliente_id="C001", log_sesion=No
 
 
 # ================================================================
-# INTERFAZ DE CHAT (Streamlit)
+# SELECTOR DE IDIOMA (arriba del todo del sidebar)
 # ================================================================
-st.title("🏦 Helix IA")
-st.caption("Asistente financiero — proyecto de portfolio | Helix es una fintech digital ficticia")
-st.divider()
-
+if "idioma" not in st.session_state:
+    st.session_state.idioma = "es"
 if "historial" not in st.session_state:
     st.session_state.historial = []
 if "log_sesion" not in st.session_state:
     st.session_state.log_sesion = []
+if "pending_prompt" not in st.session_state:
+    st.session_state.pending_prompt = None
+
+with st.sidebar:
+    idiomas_disponibles = ["es", "en", "pt"]
+    idioma_actual_idx = idiomas_disponibles.index(st.session_state.idioma)
+    idioma_sel = st.selectbox(
+        "🌐",
+        options=idiomas_disponibles,
+        index=idioma_actual_idx,
+        format_func=lambda code: TEXTOS[code]["flag"],
+        label_visibility="collapsed",
+    )
+    if idioma_sel != st.session_state.idioma:
+        st.session_state.idioma = idioma_sel
+        st.session_state.historial = []
+        st.session_state.log_sesion = []
+        st.session_state.pending_prompt = None
+        st.rerun()
+
+t = TEXTOS[st.session_state.idioma]
+
+# ================================================================
+# INTERFAZ DE CHAT (Streamlit)
+# ================================================================
+st.title("🏦 Helix IA")
+st.caption(t["caption"])
+st.divider()
 
 # Mostrar historial (sin el system prompt ni el contexto FAQ inyectado)
 for msg in st.session_state.historial:
@@ -374,33 +501,49 @@ for msg in st.session_state.historial:
         with st.chat_message("assistant"):
             st.write(msg["content"])
 
-# Input del usuario
-if prompt := st.chat_input("💬 Escribí tu consulta financiera..."):
+# Input del usuario: por chat o por botón de sugerencia
+prompt = st.chat_input(t["chat_placeholder"])
+
+if not prompt and st.session_state.pending_prompt:
+    prompt = st.session_state.pending_prompt
+    st.session_state.pending_prompt = None
+
+if prompt:
     with st.chat_message("user"):
         st.write(prompt)
 
     with st.chat_message("assistant"):
-        with st.spinner("🧠 Procesando tu consulta..."):
+        with st.spinner(t["spinner"]):
             respuesta = asistente_helix(
                 prompt,
                 st.session_state.historial,
                 cliente_id="C001",
-                log_sesion=st.session_state.log_sesion
+                log_sesion=st.session_state.log_sesion,
+                idioma_instruccion=t["lang_instruction"],
             )
         st.write(respuesta)
 
 # ================================================================
-# SIDEBAR
+# SIDEBAR (resto)
 # ================================================================
 with st.sidebar:
-    st.write("**Cliente de prueba:** C001 (Carlos)")
-    st.write("**Probá preguntar:**")
-    st.write("• ¿Cuánto rinde el FCI de renta fija?")
-    st.write("• ¿Cuál es mi saldo?")
-    st.write("• Quiero invertir en CEDEARs, ¿qué me recomendás?")
-    st.write("• Necesito liquidez inmediata, ¿qué me conviene?")
+    st.write(t["cliente_label"])
+    st.write(t["preguntas_label"])
+
+    for pregunta in t["preguntas"]:
+        if st.button(pregunta, use_container_width=True):
+            st.session_state.pending_prompt = pregunta
+            st.rerun()
+
     st.divider()
-    if st.button("🗑️ Reiniciar conversación"):
+    if st.button(t["reset_btn"]):
         st.session_state.historial = []
         st.session_state.log_sesion = []
+        st.session_state.pending_prompt = None
         st.rerun()
+
+    st.divider()
+    st.subheader(t["about_header"])
+    st.write(t["about_body"])
+    st.markdown(f"[{t['link_portfolio']}]({PORTFOLIO_URL})")
+    st.markdown(f"[{t['link_linkedin']}]({LINKEDIN_URL})")
