@@ -75,6 +75,50 @@ faq_database = [
     {
         "respuesta": "Podés consultar el estado de tus inversiones las 24 horas desde la app de Helix.",
         "variantes": ["puedo ver mis inversiones desde el celular", "la app funciona las 24 horas"]
+    },
+    {
+        "respuesta": "Los CEDEARs son certificados que representan acciones de empresas extranjeras (ej: Apple, Tesla, Amazon, Microsoft) y cotizan en pesos en el mercado argentino, permitiendo invertir en el exterior sin necesidad de girar dólares fuera del país. Helix cobra una comisión de 0.5% por operación, sin monto mínimo.",
+        "variantes": [
+            "qué son los cedears",
+            "cómo compro acciones de empresas extranjeras desde Argentina",
+            "puedo invertir en Apple o Tesla desde acá",
+            "quiero invertir en cedears"
+        ]
+    },
+    {
+        "respuesta": "Para armar una cartera diversificada de CEDEARs, Helix recomienda distribuir el monto entre 6-8 empresas de distintos sectores: tecnología (Apple, Microsoft, Nvidia), consumo (Coca-Cola, McDonald's), salud (Pfizer, Johnson & Johnson) y energía (Exxon). Esto reduce el riesgo de concentración en un solo sector o empresa.",
+        "variantes": [
+            "quiero invertir en una cartera de cedears que me recomiendan",
+            "cómo armo una cartera diversificada de acciones extranjeras",
+            "en qué empresas me conviene invertir si quiero diversificar",
+            "tengo dólares para invertir en cedears, cómo los reparto"
+        ]
+    },
+    {
+        "respuesta": "Helix ofrece acceso a bonos soberanos argentinos en dólares (como AL30 y GD30), cuyo rendimiento depende de la cotización de mercado. Son instrumentos con riesgo país y potencial de revalorización, recomendados para perfiles que buscan exposición a renta fija en dólares con mayor volatilidad que un plazo fijo.",
+        "variantes": [
+            "qué bonos soberanos tienen disponibles",
+            "conviene invertir en bonos argentinos en dólares",
+            "qué es el AL30 o el GD30",
+            "quiero comprar bonos del estado argentino"
+        ]
+    },
+    {
+        "respuesta": "A través de CEDEARs también podés acceder a ETFs internacionales que replican índices como el S&P 500 (SPY) o el Nasdaq 100 (QQQ), lo que te da diversificación instantánea en cientos de empresas con una sola operación, ideal si buscás exposición amplia sin elegir acciones individuales.",
+        "variantes": [
+            "puedo invertir en el sp500 desde Argentina",
+            "qué etfs están disponibles para invertir",
+            "cómo diversifico en muchas empresas con una sola inversión",
+            "quiero invertir en el nasdaq"
+        ]
+    },
+    {
+        "respuesta": "Las Obligaciones Negociables (ON) son bonos corporativos emitidos por empresas argentinas en dólares, con cupones de interés periódicos. El cupón promedio en Helix es de 7% anual a 2-5 años, y representan una alternativa a los bonos soberanos con riesgo crediticio de la empresa emisora en lugar del riesgo país.",
+        "variantes": [
+            "qué son las obligaciones negociables",
+            "conviene invertir en on de empresas argentinas",
+            "qué diferencia hay entre un bono del estado y uno de una empresa"
+        ]
     }
 ]
 
@@ -151,6 +195,20 @@ def buscar_producto(nombre_producto: str) -> str:
                "Money Market (rescate inmediato, ideal para liquidez).",
         "fondo": "Helix ofrece dos FCI: Renta Fija (rendimiento ~9.2% mensual, rescate 24-48hs) y "
                  "Money Market (rescate inmediato, ideal para liquidez).",
+        "cedears": "CEDEARs Helix: acceso a acciones de empresas extranjeras (Apple, Tesla, Amazon, "
+                   "Microsoft, Nvidia, Coca-Cola, entre otras). Comisión de 0.5% por operación, sin "
+                   "monto mínimo. Cotizan en pesos.",
+        "bonos": "Bonos soberanos Helix: AL30, GD30 y otros, en dólares. Rendimiento sujeto a "
+                 "cotización de mercado y riesgo país.",
+        "obligaciones negociables": "Obligaciones Negociables Helix: bonos corporativos en USD, "
+                                     "cupón promedio 7% anual, plazo 2-5 años.",
+        "on": "Obligaciones Negociables Helix: bonos corporativos en USD, cupón promedio 7% anual, "
+              "plazo 2-5 años.",
+        "etf": "A través de CEDEARs, Helix da acceso a ETFs como SPY (S&P 500) y QQQ (Nasdaq 100), "
+               "con comisión de 0.5% por operación.",
+        "acciones": "CEDEARs Helix: acceso a acciones de empresas extranjeras (Apple, Tesla, Amazon, "
+                    "Microsoft, Nvidia, Coca-Cola, entre otras). Comisión de 0.5% por operación, sin "
+                    "monto mínimo. Cotizan en pesos.",
     }
     nombre_lower = nombre_producto.lower()
     if nombre_lower in catalogo:
@@ -344,8 +402,8 @@ with st.sidebar:
     st.write("**Probá preguntar:**")
     st.write("• ¿Cuánto rinde el FCI de renta fija?")
     st.write("• ¿Cuál es mi saldo?")
+    st.write("• Quiero invertir en CEDEARs, ¿qué me recomendás?")
     st.write("• Necesito liquidez inmediata, ¿qué me conviene?")
-    st.write("• Quiero hacer un reclamo formal")
     st.divider()
     if st.button("🗑️ Reiniciar conversación"):
         st.session_state.historial = []
