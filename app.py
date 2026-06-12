@@ -414,14 +414,14 @@ def asistente_helix(mensaje_usuario, historial, cliente_id="C001", log_sesion=No
     )
     mensaje_modelo = respuesta.choices[0].message
 
-   if mensaje_modelo.tool_calls:
+    if mensaje_modelo.tool_calls:
         historial.append({
             "role": "assistant",
             "content": mensaje_modelo.content,
             "tool_calls": [
                 {
                     "id": tc.id,
-                    "type": "function",
+                    "type": tc.type,
                     "function": {"name": tc.function.name, "arguments": tc.function.arguments}
                 }
                 for tc in mensaje_modelo.tool_calls
@@ -505,7 +505,7 @@ for msg in st.session_state.historial:
         contenido = msg["content"].split("\n\n[Info de la base de conocimiento Helix:")[0]
         with st.chat_message("user"):
             st.write(contenido)
-   elif msg["role"] == "assistant" and msg.get("content"):
+    elif msg["role"] == "assistant" and msg.get("content"):
         with st.chat_message("assistant"):
             st.write(msg["content"])
 
