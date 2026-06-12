@@ -4,6 +4,7 @@ import numpy as np
 from datetime import datetime
 from openai import OpenAI
 from sentence_transformers import SentenceTransformer
+from ddgs import DDGS
 
 # ================================================================
 # CONFIGURACIÓN DE LA PÁGINA
@@ -29,7 +30,7 @@ TEXTOS = {
             "¿Cuánto rinde el FCI de renta fija?",
             "¿Cuál es mi saldo?",
             "Quiero invertir en CEDEARs, ¿qué me recomendás?",
-            "Necesito liquidez inmediata, ¿qué me conviene?",
+            "¿Cuál es la cotización del dólar hoy?",
         ],
         "cliente_label": "**Cliente de prueba:** C001",
         "reset_btn": "🗑️ Reiniciar conversación",
@@ -49,7 +50,7 @@ TEXTOS = {
             "How much does the fixed-income fund yield?",
             "What's my balance?",
             "I want to invest in CEDEARs, what do you recommend?",
-            "I need immediate liquidity, what's best for me?",
+            "What's today's USD exchange rate?",
         ],
         "cliente_label": "**Test client:** C001",
         "reset_btn": "🗑️ Reset conversation",
@@ -69,7 +70,7 @@ TEXTOS = {
             "Quanto rende o fundo de renda fixa?",
             "Qual é o meu saldo?",
             "Quero investir em CEDEARs, o que você recomenda?",
-            "Preciso de liquidez imediata, o que é melhor para mim?",
+            "Qual é a cotação do dólar hoje?",
         ],
         "cliente_label": "**Cliente de teste:** C001",
         "reset_btn": "🗑️ Reiniciar conversa",
@@ -283,6 +284,28 @@ def listar_movimientos(cliente_id: str, cantidad: int = 3) -> str:
     return "\n".join(movs[:cantidad])
 
 
+def buscar_informacion_actual(consulta: str) -> str:
+    """Busca información actualizada en internet (cotizaciones, noticias, datos del momento)."""
+    try:
+        with DDGS() as ddgs:
+            resultados = list(ddgs.text(consulta, region="ar-es", max_results=3))
+        if not resultados:
+            return "No se encontraron resultados actuales para esta búsqueda."
+
+        resumen = []
+        for r in resultados:
+            titulo = r.get("title", "")
+            cuerpo = r.get("body", "")[:300]
+            fuente = r.get("href", "")
+            resumen.append(f"- {titulo}: {cuerpo} (Fuente: {fuente})")
+
+        return "\n".join(resumen)
+    except Exception:
+        return ("No se pudo acceder a información en tiempo real en este momento. "
+                "Respondé con tu conocimiento general y aclará que no pudiste verificar "
+                "el dato más actualizado.")
+
+
 def buscar_producto(nombre_producto: str) -> str:
     catalogo = {
         "plazo fijo": "Plazo Fijo Helix Premium: 118% TNA, plazos de 30 a 365 días.",
@@ -320,6 +343,7 @@ funciones_disponibles = {
     "consultar_saldo": consultar_saldo,
     "listar_movimientos": listar_movimientos,
     "buscar_producto": buscar_producto,
+    "buscar_informacion_actual": buscar_informacion_actual,
 }
 
 tools = [
@@ -361,6 +385,18 @@ tools = [
                 "required": ["nombre_producto"]
             }
         }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "buscar_informacion_actual",
+            "description": "Busca información actualizada en internet en tiempo real: cotización del dólar, noticias económicas, eventos del mercado, o cualquier dato que cambie día a día y no esté en el catálogo de Helix. Usar SOLO cuando el cliente pregunte por algo del momento actual (ej: 'cuál es el dólar hoy', 'qué pasó con el mercado hoy').",
+            "parameters": {
+                "type": "object",
+                "properties": {"consulta": {"type": "string", "description": "Términos de búsqueda, ej: 'cotización dólar blue hoy Argentina'."}},
+                "required": ["consulta"]
+            }
+        }
     }
 ]
 
@@ -396,6 +432,9 @@ def asistente_helix(mensaje_usuario, historial, cliente_id="C001", log_sesion=No
             Helix es una fintech, no un banco tradicional: nunca uses esa palabra.
             El cliente que está consultando tiene el ID '{cliente_id}'.
             Sos profesional, conciso y orientado a soluciones.
+            Tenés acceso a información actualizada de internet (cotizaciones, noticias del
+            mercado) a través de la función buscar_informacion_actual — usala solo para datos
+            del momento actual que no estén en tu catálogo de productos.
             Si la consulta está fuera de tu alcance (temas legales, fiscales, reclamos formales,
             o no tenés información suficiente), decilo y ofrecé derivar al asesor de cuenta.
             Nunca inventes tasas, números o condiciones de productos.
