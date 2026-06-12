@@ -427,6 +427,7 @@ tools = [
             "parameters": {
                 "type": "object",
                 "properties": {},
+                "required": []
             }
         }
     }
