@@ -505,7 +505,7 @@ for msg in st.session_state.historial:
         contenido = msg["content"].split("\n\n[Info de la base de conocimiento Helix:")[0]
         with st.chat_message("user"):
             st.write(contenido)
-    elif msg["role"] == "assistant":
+   elif msg["role"] == "assistant" and msg.get("content"):
         with st.chat_message("assistant"):
             st.write(msg["content"])
 
