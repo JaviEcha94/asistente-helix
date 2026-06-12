@@ -413,6 +413,7 @@ def asistente_helix(mensaje_usuario, historial, cliente_id="C001", log_sesion=No
         "faq_score": None,
         "tools_llamadas": [],
         "derivado": False,
+        "error": None,
     }
 
     # 1. Búsqueda semántica en FAQs — RAG simple
@@ -442,47 +443,57 @@ def asistente_helix(mensaje_usuario, historial, cliente_id="C001", log_sesion=No
         })
 
     historial.append({"role": "user", "content": mensaje_usuario + contexto_faq})
+    len_antes_del_intento = len(historial)
 
     # 3. Request con tools (function calling)
-    respuesta = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=historial,
-        tools=tools,
-        tool_choice="auto",
-        temperature=0.4
-    )
-    mensaje_modelo = respuesta.choices[0].message
-
-    if mensaje_modelo.tool_calls:
-        historial.append({
-            "role": "assistant",
-            "content": mensaje_modelo.content,
-            "tool_calls": [
-                {
-                    "id": tc.id,
-                    "type": tc.type,
-                    "function": {"name": tc.function.name, "arguments": tc.function.arguments}
-                }
-                for tc in mensaje_modelo.tool_calls
-            ]
-        })
-        for tool_call in mensaje_modelo.tool_calls:
-            nombre_funcion = tool_call.function.name
-            argumentos = json.loads(tool_call.function.arguments)
-            registro["tools_llamadas"].append({"funcion": nombre_funcion, "argumentos": argumentos})
-
-            resultado = funciones_disponibles[nombre_funcion](**argumentos)
-            historial.append({
-                "role": "tool", "tool_call_id": tool_call.id,
-                "name": nombre_funcion, "content": resultado
-            })
-
-        respuesta_final = client.chat.completions.create(
-            model="llama-3.3-70b-versatile", messages=historial, temperature=0.4
+    try:
+        respuesta = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=historial,
+            tools=tools,
+            tool_choice="auto",
+            temperature=0.4
         )
-        texto_respuesta = respuesta_final.choices[0].message.content
-    else:
-        texto_respuesta = mensaje_modelo.content
+        mensaje_modelo = respuesta.choices[0].message
+
+        if mensaje_modelo.tool_calls:
+            historial.append({
+                "role": "assistant",
+                "content": mensaje_modelo.content or "",
+                "tool_calls": [
+                    {
+                        "id": tc.id,
+                        "type": tc.type,
+                        "function": {"name": tc.function.name, "arguments": tc.function.arguments}
+                    }
+                    for tc in mensaje_modelo.tool_calls
+                ]
+            })
+            for tool_call in mensaje_modelo.tool_calls:
+                nombre_funcion = tool_call.function.name
+                argumentos = json.loads(tool_call.function.arguments)
+                registro["tools_llamadas"].append({"funcion": nombre_funcion, "argumentos": argumentos})
+
+                resultado = funciones_disponibles[nombre_funcion](**argumentos)
+                historial.append({
+                    "role": "tool", "tool_call_id": tool_call.id,
+                    "name": nombre_funcion, "content": resultado
+                })
+
+            respuesta_final = client.chat.completions.create(
+                model="llama-3.3-70b-versatile", messages=historial, temperature=0.4
+            )
+            texto_respuesta = respuesta_final.choices[0].message.content or ""
+        else:
+            texto_respuesta = mensaje_modelo.content or ""
+
+    except Exception as e:
+        registro["error"] = type(e).__name__
+        del historial[len_antes_del_intento:]
+        texto_respuesta = (
+            "Tuve un problema técnico procesando esa consulta. "
+            "¿Podés reformularla o intentar de nuevo en unos segundos?"
+        )
 
     historial.append({"role": "assistant", "content": texto_respuesta})
 
