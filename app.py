@@ -6,6 +6,7 @@ from openai import OpenAI
 from sentence_transformers import SentenceTransformer
 from ddgs import DDGS
 import requests
+import traceback
 
 # ================================================================
 # CONFIGURACIÓN DE LA PÁGINA
@@ -285,8 +286,9 @@ def listar_movimientos(cliente_id: str, cantidad: int = 3) -> str:
     return "\n".join(movs[:cantidad])
 
 
-def obtener_cotizacion_dolar() -> str:
-    """Obtiene las cotizaciones del dólar en Argentina desde una API financiera confiable (dolarapi.com)."""
+def obtener_cotizacion_dolar(tipo: str = "") -> str:
+    """Obtiene las cotizaciones del dólar en Argentina desde una API financiera confiable (dolarapi.com).
+    'tipo' es opcional (ej: 'oficial', 'blue', 'mep'); si se omite, devuelve todas."""
     try:
         resp = requests.get("https://dolarapi.com/v1/dolares", timeout=5)
         resp.raise_for_status()
@@ -294,10 +296,14 @@ def obtener_cotizacion_dolar() -> str:
         lineas = []
         for d in datos:
             nombre = d.get("nombre", "")
+            if tipo and tipo.lower() not in nombre.lower():
+                continue
             compra = d.get("compra")
             venta = d.get("venta")
             actualizado = d.get("fechaActualizacion", "")
             lineas.append(f"Dólar {nombre}: compra ${compra} / venta ${venta} (actualizado: {actualizado})")
+        if not lineas:
+            return "No se encontró ese tipo de dólar. Tipos disponibles: oficial, blue, mep, ccl, cripto, tarjeta."
         return "\n".join(lineas)
     except Exception:
         return ("No se pudo obtener la cotización del dólar en este momento desde la fuente "
@@ -426,7 +432,12 @@ tools = [
             "description": "Obtiene la cotización oficial y actualizada del dólar en Argentina (oficial, blue, MEP, CCL, etc.) desde una fuente financiera confiable en tiempo real. Usar SIEMPRE que el cliente pregunte por la cotización del dólar, sea cual sea el tipo.",
             "parameters": {
                 "type": "object",
-                "properties": {},
+                "properties": {
+                    "tipo": {
+                        "type": "string",
+                        "description": "Tipo de dólar a consultar: 'oficial', 'blue', 'mep', 'ccl', 'cripto' o 'tarjeta'. Si no se especifica, devuelve todas las cotizaciones."
+                    }
+                },
                 "required": []
             }
         }
@@ -526,7 +537,9 @@ def asistente_helix(mensaje_usuario, historial, cliente_id="C001", log_sesion=No
             texto_respuesta = mensaje_modelo.content or ""
 
     except Exception as e:
-        registro["error"] = type(e).__name__
+        print(f"[asistente_helix] ERROR: {type(e).__name__}: {e}")
+        traceback.print_exc()
+        registro["error"] = f"{type(e).__name__}: {e}"
         del historial[len_antes_del_intento:]
         texto_respuesta = (
             "Tuve un problema técnico procesando esa consulta. "
