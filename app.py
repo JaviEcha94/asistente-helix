@@ -414,8 +414,19 @@ def asistente_helix(mensaje_usuario, historial, cliente_id="C001", log_sesion=No
     )
     mensaje_modelo = respuesta.choices[0].message
 
-    if mensaje_modelo.tool_calls:
-        historial.append(mensaje_modelo)
+   if mensaje_modelo.tool_calls:
+        historial.append({
+            "role": "assistant",
+            "content": mensaje_modelo.content,
+            "tool_calls": [
+                {
+                    "id": tc.id,
+                    "type": "function",
+                    "function": {"name": tc.function.name, "arguments": tc.function.arguments}
+                }
+                for tc in mensaje_modelo.tool_calls
+            ]
+        })
         for tool_call in mensaje_modelo.tool_calls:
             nombre_funcion = tool_call.function.name
             argumentos = json.loads(tool_call.function.arguments)
