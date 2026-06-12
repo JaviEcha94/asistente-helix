@@ -5,6 +5,7 @@ from datetime import datetime
 from openai import OpenAI
 from sentence_transformers import SentenceTransformer
 from ddgs import DDGS
+import requests
 
 # ================================================================
 # CONFIGURACIÓN DE LA PÁGINA
@@ -284,6 +285,25 @@ def listar_movimientos(cliente_id: str, cantidad: int = 3) -> str:
     return "\n".join(movs[:cantidad])
 
 
+def obtener_cotizacion_dolar() -> str:
+    """Obtiene las cotizaciones del dólar en Argentina desde una API financiera confiable (dolarapi.com)."""
+    try:
+        resp = requests.get("https://dolarapi.com/v1/dolares", timeout=5)
+        resp.raise_for_status()
+        datos = resp.json()
+        lineas = []
+        for d in datos:
+            nombre = d.get("nombre", "")
+            compra = d.get("compra")
+            venta = d.get("venta")
+            actualizado = d.get("fechaActualizacion", "")
+            lineas.append(f"Dólar {nombre}: compra ${compra} / venta ${venta} (actualizado: {actualizado})")
+        return "\n".join(lineas)
+    except Exception:
+        return ("No se pudo obtener la cotización del dólar en este momento desde la fuente "
+                "habitual. No inventes un valor.")
+
+
 def buscar_informacion_actual(consulta: str) -> str:
     """Busca información actualizada en internet (cotizaciones, noticias, datos del momento)."""
     try:
@@ -344,6 +364,7 @@ funciones_disponibles = {
     "listar_movimientos": listar_movimientos,
     "buscar_producto": buscar_producto,
     "buscar_informacion_actual": buscar_informacion_actual,
+    "obtener_cotizacion_dolar": obtener_cotizacion_dolar,
 }
 
 tools = [
@@ -390,11 +411,22 @@ tools = [
         "type": "function",
         "function": {
             "name": "buscar_informacion_actual",
-            "description": "Busca información actualizada en internet en tiempo real: cotización del dólar, noticias económicas, eventos del mercado, o cualquier dato que cambie día a día y no esté en el catálogo de Helix. Usar SOLO cuando el cliente pregunte por algo del momento actual (ej: 'cuál es el dólar hoy', 'qué pasó con el mercado hoy').",
+            "description": "Busca información actualizada en internet en tiempo real: noticias económicas, eventos del mercado, o cotizaciones de CEDEARs/acciones que no estén en el catálogo. Para el dólar, usar SIEMPRE obtener_cotizacion_dolar en su lugar. Usar SOLO para datos del momento actual.",
             "parameters": {
                 "type": "object",
-                "properties": {"consulta": {"type": "string", "description": "Términos de búsqueda, ej: 'cotización dólar blue hoy Argentina'."}},
+                "properties": {"consulta": {"type": "string", "description": "Términos de búsqueda, ej: 'cotización CEDEAR SPY pesos bymadata hoy'."}},
                 "required": ["consulta"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "obtener_cotizacion_dolar",
+            "description": "Obtiene la cotización oficial y actualizada del dólar en Argentina (oficial, blue, MEP, CCL, etc.) desde una fuente financiera confiable en tiempo real. Usar SIEMPRE que el cliente pregunte por la cotización del dólar, sea cual sea el tipo.",
+            "parameters": {
+                "type": "object",
+                "properties": {},
             }
         }
     }
@@ -433,12 +465,17 @@ def asistente_helix(mensaje_usuario, historial, cliente_id="C001", log_sesion=No
             Helix es una fintech, no un banco tradicional: nunca uses esa palabra.
             El cliente que está consultando tiene el ID '{cliente_id}'.
             Sos profesional, conciso y orientado a soluciones.
-            Tenés acceso a información actualizada de internet (cotizaciones, noticias del
-            mercado) a través de la función buscar_informacion_actual — usala solo para datos
-            del momento actual que no estén en tu catálogo de productos.
+            Tenés DOS herramientas de datos en tiempo real:
+            - obtener_cotizacion_dolar: para CUALQUIER pregunta sobre el dólar (oficial, blue, MEP, CCL). Usala siempre para esto, es la fuente más confiable.
+            - buscar_informacion_actual: para cotizaciones de CEDEARs/acciones/ETFs específicos o noticias. Al armar la consulta de búsqueda para un CEDEAR, incluí términos como "bymadata" o "cotización en pesos Argentina" para priorizar fuentes locales confiables.
+            REGLA CRÍTICA ANTI-ALUCINACIÓN: nunca generes un número, precio, tasa o
+            cotización por tu cuenta — ni de productos de Helix ni de activos externos —
+            aunque "creas" conocer el valor aproximado de tu entrenamiento. Si después de
+            buscar no tenés un dato verificado, decí explícitamente "no tengo ese dato
+            verificado en este momento" y ofrecé derivar al asesor. Un número inventado
+            es peor que admitir que no lo sabés.
             Si la consulta está fuera de tu alcance (temas legales, fiscales, reclamos formales,
             o no tenés información suficiente), decilo y ofrecé derivar al asesor de cuenta.
-            Nunca inventes tasas, números o condiciones de productos.
             {idioma_instruccion}"""
         })
 
